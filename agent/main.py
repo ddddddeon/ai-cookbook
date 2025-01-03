@@ -1,8 +1,21 @@
+import click
 from smolagents import CodeAgent
 from smolagents import LiteLLMModel
+from smolagents import GradioUI
 
-model = LiteLLMModel("deepseek/deepseek-chat")
-agent = CodeAgent(tools=[], model=model, add_base_tools=True)
 
-prompt = input("> ")
-agent.run(prompt)
+@click.command()
+@click.option("--ui", is_flag=True, help="Run with Gradio UI interface")
+def main(ui):
+    model = LiteLLMModel("deepseek/deepseek-chat")
+    agent = CodeAgent(tools=[], model=model, add_base_tools=True)
+
+    if ui:
+        GradioUI(agent).launch()
+    else:
+        prompt = input("> ")
+        agent.run(prompt)
+
+
+if __name__ == "__main__":
+    main()
