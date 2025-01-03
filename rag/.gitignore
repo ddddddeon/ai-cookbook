@@ -1,0 +1,10 @@
+.aider*
+.python-version
+**/__pycache__
+log.txt
+bin/
+lib/
+pyvenv.cfg
+mypy.ini
+build/
+**.egg-info/
