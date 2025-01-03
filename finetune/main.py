@@ -1,30 +1,53 @@
 from collections import defaultdict
-
+import click
+import time
 from openai import OpenAI
 
 openai = OpenAI()
 
-# file_obj = openai.files.create(
-#     file=open("train_data.jsonl", "rb"),
-#     purpose="fine-tune",
-# )
 
-# file_id = file_obj.id
+@click.command()
+@click.option("--train", is_flag=True, help="Run the training process")
+def main(train):
+    model = ("ft:gpt-3.5-turbo-1106:personal::AlRL2cJb",)
 
-# job = openai.fine_tuning.jobs.create(
-#     training_file=file_id,
-#     model="gpt-3.5-turbo-1106",
-# )
+    if train:
+        file_obj = openai.files.create(
+            file=open("./train_data.jsonl", "rb"),
+            purpose="fine-tune",
+        )
 
-# jobs = openai.fine_tuning.jobs.list()
-# print(openai.fine_tuning.jobs.retrieve(jobs.data[0].id))
+        file_id = file_obj.id
 
-response = openai.chat.completions.create(
-    model="ft:gpt-3.5-turbo-1106:personal::AlRL2cJb",
-    messages=[
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": "Is Chris cool?"}
-    ]
-)
+        job = openai.fine_tuning.jobs.create(
+            training_file=file_id,
+            model="gpt-3.5-turbo-1106",
+        )
 
-print(response.choices[0].message.content)
+        while True:
+            status = openai.fine_tuning.jobs.retrieve(job.id).status
+            if status in ["succeeded", "failed"]:
+                break
+            print(f"Training status: {status} - waiting 30 seconds...")
+            time.sleep(30)
+
+        if status == "succeeded":
+            model = openai.fine_tuning.jobs.retrieve(job.id).fine_tuned_model
+            print(f"Training complete! Model ID: {model}")
+        else:
+            print("Training failed!")
+            return
+
+    response = openai.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": "Is Chris cool?"},
+        ],
+    )
+
+    print(response.choices[0].message.content)
+
+
+if __name__ == "__main__":
+    main()

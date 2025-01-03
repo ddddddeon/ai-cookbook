@@ -5,14 +5,15 @@ This project demonstrates fine-tuning GPT-3.5-turbo using OpenAI's API to create
 ## Usage
 
 ```bash
-pip install openai
+pip install openai click
+```
+
+To run the assistant using the pre-trained model:
+```bash
 python main.py
 ```
 
-## Training Data
-
-The training data (`train_data.jsonl`) contains 50 examples of:
-- System prompts establishing the assistant's personality
-- User questions about Chris's coolness
-- Highly enthusiastic assistant responses
-
+To train a new model (requires train_data.jsonl in the finetune directory):
+```bash
+python main.py --train
+```
