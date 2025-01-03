@@ -1,10 +1,10 @@
 import click
 import chromadb
-from chromadb.utils.embedding_functions import EmbeddingFunction
 import os
-import random
 import re
 import requests
+
+from chromadb.utils.embedding_functions import EmbeddingFunction
 from bs4 import BeautifulSoup
 from openai import OpenAI
 
